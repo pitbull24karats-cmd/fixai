@@ -67,9 +67,10 @@ If no issues in a category, use an empty array. Be concise."""
 
     raw = await call_ollama(prompt)
     try:
-        start = raw.find("{")
-        end = raw.rfind("}") + 1
-        return json.loads(raw[start:end])
+        cleaned = raw.replace("```json", "").replace("```", "")
+        start = cleaned.find("{")
+        end = cleaned.rfind("}") + 1
+        return json.loads(cleaned[start:end])
     except Exception:
         return {
             "bugs": [],
@@ -100,9 +101,10 @@ If no suggestions in a category, use an empty array. Be concise. Do NOT apply an
 
     raw = await call_ollama(prompt)
     try:
-        start = raw.find("{")
-        end = raw.rfind("}") + 1
-        return json.loads(raw[start:end])
+        cleaned = raw.replace("```json", "").replace("```", "")
+        start = cleaned.find("{")
+        end = cleaned.rfind("}") + 1
+        return json.loads(cleaned[start:end])
     except Exception:
         return {
             "readability": [],
