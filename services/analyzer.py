@@ -9,6 +9,7 @@ ALLOWED_BASES = [
     Path.home() / "Desktop" / "Jarvis",
     Path.home() / "jarvis_server",
     Path.home() / "Desktop" / "devbrain",
+    Path.home() / "Desktop" / "fixai",
 ]
 
 
@@ -27,7 +28,7 @@ def collect_files(path: Path) -> list[Path]:
     return [f for f in path.rglob("*") if f.is_file() and f.suffix in exts]
 
 
-def read_file_safe(path: Path, max_bytes: int = 8000) -> str:
+def read_file_safe(path: Path, max_bytes: int = 3000) -> str:
     try:
         return path.read_text(encoding="utf-8", errors="replace")[:max_bytes]
     except Exception as e:
@@ -41,7 +42,7 @@ async def call_ollama(prompt: str) -> str:
         "stream": False,
         "options": {"temperature": 0.2},
     }
-    async with httpx.AsyncClient(timeout=120.0) as client:
+    async with httpx.AsyncClient(timeout=30.0) as client:
         resp = await client.post(f"{OLLAMA_URL}/api/generate", json=payload)
         resp.raise_for_status()
         return resp.json().get("response", "")

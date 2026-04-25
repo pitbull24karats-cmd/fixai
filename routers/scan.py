@@ -27,9 +27,17 @@ async def scan(req: ScanRequest):
     if not files:
         raise HTTPException(status_code=422, detail="No supported source files found.")
 
+    if target.is_dir():
+        files = files[:10]
+
     results = []
     for f in files:
-        content = read_file_safe(f)
+        try:
+            lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
+            text = "\n".join(lines[:100]) if len(lines) > 100 else "\n".join(lines)
+            content = text[:3000]
+        except Exception as e:
+            content = f"[read error: {e}]"
         issues = await analyze_for_issues(f, content)
         total_issues = sum(
             len(v) for k, v in issues.items() if isinstance(v, list)
